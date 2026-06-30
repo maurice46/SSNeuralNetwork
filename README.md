@@ -14,7 +14,7 @@ A neural network built **entirely from scratch in Python** (no PyTorch, no Tenso
 
 This project investigates whether a custom activation function can improve gradient flow and training stability in a neural network compared to common functions such as Tanh and ReLU. After implementing the core building blocks of a neural network (gradient descent, backpropagation, and loss functions) from scratch, the custom function is benchmarked against Tanh and ReLU on a supervised binary classification task using the Wine Quality dataset from the UCI Machine Learning Repository. Performance is compared on accuracy, convergence speed, and gradient behavior.
 
-## The problem
+## The Problem
 
 Tanh and ReLU are the standard choices for activation functions, but both have well-documented failure modes:
 
@@ -23,7 +23,7 @@ Tanh and ReLU are the standard choices for activation functions, but both have w
 
 This raises the question explored in this project: *can a custom activation function reduce the weaknesses of Tanh and ReLU while still maintaining stable gradient flow?*
 
-## The custom activation function
+## The Custom Activation Function
 
 ```
 custom(x) = 0.1x + tanh(x)
@@ -52,7 +52,7 @@ Every component is implemented from first principles in pure Python (no autograd
 
 The task is framed as **binary classification**: wines scoring ≥6 are labeled "good" (1), all others "bad" (0). Features are standardized before training, and the data is split 80/20 into training and test sets.
 
-## Experiment design
+## Experiment Design
 
 Each activation function (Tanh, ReLU, Custom) was trained across a full grid of:
 - **Learning rates:** 0.001, 0.01, 0.1
@@ -84,7 +84,7 @@ Looking beyond best-case results, aggregating across every run in [`results.txt`
 
 *"Failed to learn" = the network collapsed to ~44% test accuracy, i.e. defaulted to predicting the majority class — observed almost exclusively at `lr=0.1` for ReLU.*
 
-### Per-activation findings
+### Per-Activation Findings
 
 **Tanh** trained smoothly and predictably, with loss dropping rapidly early on, but performance plateaued, additional training past ~100 epochs produced little to no improvement and occasionally slightly hurt test accuracy. This matches the expected vanishing-gradient behavior: the gradient becomes too small to keep improving the model.
 
