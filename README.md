@@ -6,20 +6,20 @@ A neural network built **entirely from scratch in Python** (no PyTorch, no Tenso
 
 **Full paper:** [`Research_Paper.pdf`](./Research_Paper.pdf)
 
-> **TL;DR:** The custom activation `0.1x + tanh(x)` achieved the highest testing accuracy (78.88%) and lowest final test loss of any activation tested, while remaining far more stable than ReLU — which failed to learn entirely at higher learning rates.
+> **TL;DR:** The custom activation `0.1x + tanh(x)` achieved the highest testing accuracy (78.88%) and lowest final test loss of any activation tested, while remaining far more stable than ReLU, which failed to learn entirely at higher learning rates.
 
 ---
 
 ## Abstract
 
-This project investigates whether a custom activation function can improve gradient flow and training stability in a neural network compared to common functions such as Tanh and ReLU. After implementing the core building blocks of a neural network — gradient descent, backpropagation, and loss functions — from scratch, the custom function is benchmarked against Tanh and ReLU on a supervised binary classification task using the Wine Quality dataset from the UCI Machine Learning Repository. Performance is compared on accuracy, convergence speed, and gradient behavior.
+This project investigates whether a custom activation function can improve gradient flow and training stability in a neural network compared to common functions such as Tanh and ReLU. After implementing the core building blocks of a neural network (gradient descent, backpropagation, and loss functions) from scratch, the custom function is benchmarked against Tanh and ReLU on a supervised binary classification task using the Wine Quality dataset from the UCI Machine Learning Repository. Performance is compared on accuracy, convergence speed, and gradient behavior.
 
 ## The problem
 
 Tanh and ReLU are the standard choices for activation functions, but both have well-documented failure modes:
 
-- **Tanh** is smooth and zero-centered, which helps gradients flow evenly during backpropagation — but it saturates at ±1 for large inputs, causing the **vanishing gradient problem** and slowing or stalling learning.
-- **ReLU** is simple and efficient, and avoids vanishing gradients in its active region — but it zeroes out all negative inputs, which can permanently kill neurons (**dying ReLU**), and is prone to **exploding gradients** under aggressive optimization.
+- **Tanh** is smooth and zero-centered, which helps gradients flow evenly during backpropagation, but it saturates at ±1 for large inputs, causing the **vanishing gradient problem** and slowing or stalling learning.
+- **ReLU** is simple and efficient, and avoids vanishing gradients in its active region, but it zeroes out all negative inputs, which can permanently kill neurons (**dying ReLU**), and is prone to **exploding gradients** under aggressive optimization.
 
 This raises the question explored in this project: *can a custom activation function reduce the weaknesses of Tanh and ReLU while still maintaining stable gradient flow?*
 
@@ -29,7 +29,7 @@ This raises the question explored in this project: *can a custom activation func
 custom(x) = 0.1x + tanh(x)
 ```
 
-The idea is to keep what works about Tanh — a smooth, zero-centered nonlinearity that helps weights update evenly — while fixing its core weakness. Tanh's derivative approaches zero as `x` grows large in either direction, which is what causes vanishing gradients. Adding the small linear term `0.1x` means the function's derivative never fully flattens to zero, no matter how large or small the input gets. In principle, this:
+The idea is to keep what works about Tanh, a smooth, zero-centered nonlinearity that helps weights update evenly, while fixing its core weakness. Tanh's derivative approaches zero as `x` grows large in either direction, which is what causes vanishing gradients. Adding the small linear term `0.1x` means the function's derivative never fully flattens to zero, no matter how large or small the input gets. In principle, this:
 
 - Avoids dying neurons by keeping negative values alive
 - Avoids vanishing gradients by keeping the derivative away from zero
@@ -37,14 +37,14 @@ The idea is to keep what works about Tanh — a smooth, zero-centered nonlineari
 
 ## How it's built
 
-Every component is implemented from first principles in pure Python — no autograd, no deep learning framework:
+Every component is implemented from first principles in pure Python (no autograd, no deep learning framework):
 
 - **Forward pass** — manual weighted sums and layer-by-layer activation
 - **Backpropagation** — gradients derived by hand via the chain rule on squared error loss
 - **Gradient descent** — manual weight updates using the gradient step rule
 - **Architecture** — 11 input features → 10-neuron hidden layer → 1 output neuron (binary classifier)
 
-`pandas`, `scikit-learn`, and `matplotlib` are used only for data loading, splitting/scaling, and plotting — the network itself has no ML library dependencies.
+`pandas`, `scikit-learn`, and `matplotlib` are used only for data loading, splitting/scaling, and plotting (the network itself has no ML library dependencies).
 
 ## Dataset
 
@@ -86,15 +86,15 @@ Looking beyond best-case results, aggregating across every run in [`results.txt`
 
 ### Per-activation findings
 
-**Tanh** trained smoothly and predictably, with loss dropping rapidly early on, but performance plateaued — additional training past ~100 epochs produced little to no improvement and occasionally slightly hurt test accuracy. This matches the expected vanishing-gradient behavior: the gradient becomes too small to keep improving the model.
+**Tanh** trained smoothly and predictably, with loss dropping rapidly early on, but performance plateaued, additional training past ~100 epochs produced little to no improvement and occasionally slightly hurt test accuracy. This matches the expected vanishing-gradient behavior: the gradient becomes too small to keep improving the model.
 
 **ReLU** was highly learning-rate dependent. At `lr=0.01` it trained efficiently with smooth, fast loss reduction. At `lr=0.1`, it failed to learn altogether — loss stayed flat and elevated, consistent with dying neurons and exploding gradients under aggressive optimization.
 
-**Custom** showed the most consistent balance of stability and generalization. Loss continued to decline gradually even at high epoch counts rather than flattening early like Tanh, and testing accuracy kept improving with more training rather than overfitting — suggesting the linear term successfully prevented gradient saturation while preserving Tanh's stable, zero-centered behavior.
+**Custom** showed the most consistent balance of stability and generalization. Loss continued to decline gradually even at high epoch counts rather than flattening early like Tanh, and testing accuracy kept improving with more training rather than overfitting, suggesting the linear term successfully prevented gradient saturation while preserving Tanh's stable, zero-centered behavior.
 
 ## Conclusion
 
-For this architecture, dataset, and training setup, the custom activation function `0.1x + tanh(x)` achieved the best testing accuracy and lowest final loss, while training more reliably than ReLU and continuing to improve past the point where Tanh plateaued. These results support the idea that adding a small linear component to a smooth nonlinear activation can help maintain gradient flow without sacrificing stability — but they're specific to this controlled experiment, not a general claim that the custom function is universally better. Future work could test it across different datasets, deeper architectures, and other optimizers, and compare it against other modern activations like Leaky ReLU, GELU, or Swish.
+For this architecture, dataset, and training setup, the custom activation function `0.1x + tanh(x)` achieved the best testing accuracy and lowest final loss, while training more reliably than ReLU and continuing to improve past the point where Tanh plateaued. These results support the idea that adding a small linear component to a smooth nonlinear activation can help maintain gradient flow without sacrificing stability, but they're specific to this controlled experiment, not a general claim that the custom function is universally better. Future work could test it across different datasets, deeper architectures, and other optimizers, and compare it against other modern activations like Leaky ReLU, GELU, or Swish.
 
 ## Project structure
 
